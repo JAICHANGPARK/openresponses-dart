@@ -67,3 +67,5 @@ platforms:
   macos:
   web:
   windows:
+dev_dependencies:
+  lints: ^6.1.0

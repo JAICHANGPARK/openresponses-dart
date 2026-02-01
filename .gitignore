@@ -3,3 +3,6 @@
 .idea/modules.xml
 .idea/misc.xml
 .idea/libraries/Dart_SDK.xml
+
+/.idea/
+/.dart_tool/

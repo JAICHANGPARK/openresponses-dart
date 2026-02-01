@@ -17,7 +17,14 @@
         "mockito",
         "test"
       ],
-      "devDependencies": []
+      "devDependencies": [
+        "lints"
+      ]
+    },
+    {
+      "name": "lints",
+      "version": "6.1.0",
+      "dependencies": []
     },
     {
       "name": "flutter_client_sse",
