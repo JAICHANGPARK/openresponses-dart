@@ -59,20 +59,20 @@ void demonstrateConstructorShorthands() {
   // When type is explicit, you can use .new() or named constructors
   // This works well for simple constructors
 
-  // Input with explicit type can use factory constructor shorthand
-  Input input = .items([ItemFactory.userMessage('Hello')]);
-  print('  Input created with shorthand');
+  // Input with factory constructor
+  final input = Input.items([ItemFactory.userMessage('Hello')]);
+  print('  Input created with factory: ${input.items?.length} items');
 
-  // TextFormat with named constructors
-  TextFormat format = .text();
+  // TextFormat must use full constructor (no factory methods available)
+  TextFormat format = TextFormat(type: TextFormatType.text);
   print('  TextFormat: ${format.type}');
 
-  TextFormat jsonFormat = .jsonObject();
+  TextFormat jsonFormat = TextFormat(type: TextFormatType.jsonObject);
   print('  TextFormat JSON: ${jsonFormat.type}');
 
-  // Content with static factory-like methods
-  InputContent text = .text('Hello World');
-  print('  InputContent: ${text.type}');
+  // Content must use full constructors (extension statics don't work with dot shorthands)
+  InputContent content = InputTextContent(text: 'Hello World');
+  print('  InputContent: ${content.type}');
 }
 
 void demonstrateStaticShorthands() {
@@ -98,8 +98,7 @@ Future<void> demonstrateApiUsage() async {
   // Create a request using dot shorthands throughout
   final request = CreateResponseBody(
     model: 'gpt-4o',
-    input: .items([
-      // Input.items shorthand
+    input: Input.items([
       ItemFactory.systemMessage('You are a helpful assistant.'),
       ItemFactory.userMessage('What is the weather?'),
     ]),
@@ -114,7 +113,7 @@ Future<void> demonstrateApiUsage() async {
   print('    - Truncation: ${request.truncation}');
   print('    - Service Tier: ${request.serviceTier}');
 
-  // Function tool with dot shorthand for strict flag
+  // Function tool example
   final tool = FunctionTool(name: 'get_weather')
       .withDescription('Get weather for a location')
       .withParameters({
@@ -124,9 +123,10 @@ Future<void> demonstrateApiUsage() async {
         },
       })
       .withStrict(true);
+  print('  Tool created: ${tool.name}');
 
   // Tool choice with enum shorthand
-  final toolChoice = SimpleToolChoice(.auto); // Instead of ToolChoice.auto
+  final toolChoice = SimpleToolChoice(.auto);
   print('  Tool choice: ${(toolChoice as SimpleToolChoice).choice}');
 
   // Demonstrate reasoning config with shorthands
@@ -138,17 +138,4 @@ Future<void> demonstrateApiUsage() async {
 
   client.dispose();
   print('  ✅ Demo complete!');
-}
-
-// Extension to enable more dot shorthand patterns
-extension InputContentShorthand on InputContent {
-  static InputContent text(String text) => InputTextContent(text: text);
-  static InputContent imageUrl(String url) => InputImageContent(imageUrl: url);
-  static InputContent fileUrl(String url) => InputFileContent(fileUrl: url);
-  static InputContent videoUrl(String url) => InputVideoContent(videoUrl: url);
-}
-
-extension TextFormatShorthand on TextFormat {
-  static TextFormat text() => TextFormat(type: TextFormatType.text);
-  static TextFormat jsonObject() => TextFormat(type: TextFormatType.jsonObject);
 }

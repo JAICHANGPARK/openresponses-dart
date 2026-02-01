@@ -1,8 +1,6 @@
-import 'content.dart';
 import 'enums.dart';
 import 'items.dart';
 import 'tools.dart';
-import 'requests.dart';
 
 /// Response resource from the API
 class ResponseResource {

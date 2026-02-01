@@ -27,8 +27,9 @@ void main() {
       bool isAuto = choice == .auto;
       expect(isAuto, true);
 
-      // In conditional
-      ToolChoice selected = true ? .required : .none;
+      // In conditional with variable
+      final useRequired = true;
+      ToolChoice selected = useRequired ? .required : .none;
       expect(selected, ToolChoice.required);
     });
 
@@ -58,45 +59,45 @@ void main() {
 
       // Map with enum values
       final statusMap = <MessageStatus, String>{
-        .completed: 'Done',
-        .inProgress: 'Working',
-        .incomplete: 'Stopped',
+        MessageStatus.completed: 'Done',
+        MessageStatus.inProgress: 'Working',
+        MessageStatus.incomplete: 'Stopped',
       };
-      expect(statusMap[.completed], 'Done');
+      expect(statusMap[MessageStatus.completed], 'Done');
     });
   });
 
   group('Content with dot shorthands', () {
-    test('Input content using shorthand', () {
-      // Using dot shorthand with explicit type
-      InputContent text = .text('Hello');
-      expect(text, isA<InputTextContent>());
+    test('Input content using constructors', () {
+      // Using constructors directly
+      final content = InputTextContent(text: 'Hello');
+      expect(content, isA<InputTextContent>());
 
       // In a list with explicit type
       final contents = <InputContent>[
-        .text('Hello'),
-        .imageUrl('https://example.com/image.png'),
-        .fileUrl('https://example.com/doc.pdf'),
+        InputTextContent(text: 'Hello'),
+        InputImageContent(imageUrl: 'https://example.com/image.png'),
+        InputFileContent(fileUrl: 'https://example.com/doc.pdf'),
       ];
       expect(contents.length, 3);
     });
 
-    test('Output content using shorthand', () {
-      // Using dot shorthand
-      OutputContent content = .text('Response');
+    test('Output content using constructor', () {
+      // Using constructor directly
+      final content = OutputTextContent(text: 'Response');
       expect(content, isA<OutputTextContent>());
-      expect((content as OutputTextContent).text, 'Response');
+      expect(content.text, 'Response');
     });
   });
 
   group('Items with dot shorthands', () {
     test('Creating items with factory and shorthand enums', () {
-      // Combining ItemFactory with enum shorthands
+      // Combining ItemFactory with enum values
       final userMsg = ItemFactory.userMessage('Hello');
-      expect(userMsg.role, .user);
+      expect(userMsg.role, MessageRole.user);
 
       final assistantMsg = ItemFactory.assistantMessage('Hi');
-      expect(assistantMsg.role, .assistant);
+      expect(assistantMsg.role, MessageRole.assistant);
     });
 
     test('Function call item with shorthand status', () {
@@ -117,9 +118,10 @@ void main() {
       ToolChoiceParam choice = SimpleToolChoice(.auto);
       expect((choice as SimpleToolChoice).choice, ToolChoice.auto);
 
-      // Using .required shorthand in condition
-      ToolChoiceParam requiredChoice = SimpleToolChoice(.required);
-      expect((requiredChoice as SimpleToolChoice).choice, .required);
+      // Using required in constructor
+      final requiredChoice = SimpleToolChoice(ToolChoice.required);
+      expect((requiredChoice as SimpleToolChoice).choice, ToolChoice.required);
+      expect(requiredChoice, isA<SimpleToolChoice>());
     });
   });
 
@@ -165,17 +167,17 @@ void main() {
   });
 
   group('Original tests with dot shorthands applied', () {
-    test('Content creation with shorthands', () {
-      // Using .text shorthand
-      InputContent text = .text('Hello world');
-      expect((text as InputTextContent).text, 'Hello world');
+    test('Content creation with constructors', () {
+      // Using constructor directly
+      final textContent = InputTextContent(text: 'Hello world');
+      expect(textContent.text, 'Hello world');
 
-      // Using .high shorthand
-      InputContent image = .imageUrlWithDetail(
-        'https://example.com/image.png',
-        .high,
+      // Using constructor with enum value
+      final image = InputImageContent(
+        imageUrl: 'https://example.com/image.png',
+        detail: ImageDetail.high,
       );
-      expect((image as InputImageContent).detail, ImageDetail.high);
+      expect(image.detail, ImageDetail.high);
     });
 
     test('Item creation with shorthand roles', () {
@@ -189,13 +191,15 @@ void main() {
         role: .system,
         content: [OutputTextContent(text: 'System')],
       );
-      expect(systemMsg.role, .system); // Can use shorthand in comparison too
+      expect(systemMsg.role, MessageRole.system);
     });
 
     test('Tool creation with shorthand choice', () {
       final tool = FunctionTool(
         name: 'search',
       ).withDescription('Search').withStrict(true);
+      expect(tool.name, 'search');
+      expect(tool.description, 'Search');
 
       // Using .auto shorthand
       ToolChoiceParam choice = SimpleToolChoice(.auto);
@@ -251,24 +255,4 @@ void main() {
       expect(config.summary, ReasoningSummary.detailed);
     });
   });
-}
-
-// Extension methods to enable more dot shorthands
-extension InputContentShorthand on InputContent {
-  static InputContent text(String text) => InputTextContent(text: text);
-  static InputContent imageUrl(String url) => InputImageContent(imageUrl: url);
-  static InputContent imageUrlWithDetail(String url, ImageDetail detail) =>
-      InputImageContent(imageUrl: url, detail: detail);
-  static InputContent fileUrl(String url) => InputFileContent(fileUrl: url);
-  static InputContent videoUrl(String url) => InputVideoContent(videoUrl: url);
-}
-
-extension OutputContentShorthand on OutputContent {
-  static OutputContent text(String text) => OutputTextContent(text: text);
-  static OutputContent refusal(String text) => RefusalContent(refusal: text);
-}
-
-extension TextFormatShorthand on TextFormat {
-  static TextFormat text() => TextFormat(type: TextFormatType.text);
-  static TextFormat jsonObject() => TextFormat(type: TextFormatType.jsonObject);
 }

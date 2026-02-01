@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:open_responses_dart/open_responses_dart.dart';
 
 void main() async {
