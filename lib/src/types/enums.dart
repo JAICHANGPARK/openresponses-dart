@@ -156,9 +156,29 @@ enum TextFormatType {
   jsonObject,
   jsonSchema;
 
-  String toJson() => name;
-  static TextFormatType fromJson(String json) =>
-      values.firstWhere((e) => e.name == json, orElse: () => text);
+  String toJson() {
+    switch (this) {
+      case text:
+        return 'text';
+      case jsonObject:
+        return 'json_object';
+      case jsonSchema:
+        return 'json_schema';
+    }
+  }
+
+  static TextFormatType fromJson(String json) {
+    switch (json) {
+      case 'text':
+        return text;
+      case 'json_object':
+        return jsonObject;
+      case 'json_schema':
+        return jsonSchema;
+      default:
+        return text;
+    }
+  }
 }
 
 /// Error types

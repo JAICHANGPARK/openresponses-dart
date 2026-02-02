@@ -1,6 +1,6 @@
 name: open_responses_dart
 description: A Dart client library for the Open Responses API specification. Multi-provider, interoperable LLM interface for Flutter and Dart applications.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/JAICHANGPARK/openresponses-dart
 repository: https://github.com/JAICHANGPARK/openresponses-dart
 issue_tracker: https://github.com/JAICHANGPARK/openresponses-dart/issues

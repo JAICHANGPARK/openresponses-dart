@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../types/events.dart';
 import '../types/requests.dart';
 
-const String _defaultBaseUrl = 'https://api.openai.com/v1';
+const String _defaultBaseUrl = 'https://api.openai.com';
 
 /// Exception thrown by the streaming client
 class StreamingException implements Exception {
@@ -21,23 +21,20 @@ class StreamingException implements Exception {
 
 /// Streaming client for SSE (Server-Sent Events)
 class StreamingClient {
-  final String _apiKey;
+  final String? _apiKey;
   final String _baseUrl;
   final http.Client _httpClient;
 
   /// Creates a new streaming client
-  StreamingClient({
-    required String apiKey,
-    String? baseUrl,
-    http.Client? httpClient,
-  }) : _apiKey = apiKey,
-       _baseUrl = baseUrl ?? _defaultBaseUrl,
-       _httpClient = httpClient ?? http.Client();
+  StreamingClient({String? apiKey, String? baseUrl, http.Client? httpClient})
+    : _apiKey = apiKey,
+      _baseUrl = (baseUrl ?? _defaultBaseUrl).replaceAll(RegExp(r'/$'), ''),
+      _httpClient = httpClient ?? http.Client();
 
   /// Creates a new streaming client with a custom base URL
   factory StreamingClient.withBaseUrl({
-    required String apiKey,
     required String baseUrl,
+    String? apiKey,
   }) {
     return StreamingClient(apiKey: apiKey, baseUrl: baseUrl);
   }
@@ -46,15 +43,19 @@ class StreamingClient {
   Stream<StreamingEvent> streamResponse(CreateResponseBody request) async* {
     request.stream = true;
 
-    final url = Uri.parse('$_baseUrl/responses');
+    final url = Uri.parse('$_baseUrl/v1/responses');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'text/event-stream',
+    };
+    if (_apiKey != null) {
+      headers['Authorization'] = 'Bearer $_apiKey';
+    }
 
     final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-        'Accept': 'text/event-stream',
-      },
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
 
@@ -92,15 +93,19 @@ class StreamingClient {
   Stream<String> streamResponseLines(CreateResponseBody request) async* {
     request.stream = true;
 
-    final url = Uri.parse('$_baseUrl/responses');
+    final url = Uri.parse('$_baseUrl/v1/responses');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'text/event-stream',
+    };
+    if (_apiKey != null) {
+      headers['Authorization'] = 'Bearer $_apiKey';
+    }
 
     final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-        'Accept': 'text/event-stream',
-      },
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
 

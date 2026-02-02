@@ -3,6 +3,9 @@ import 'package:open_responses_dart/open_responses_dart.dart';
 void main() async {
   final client = Client(apiKey: 'your-api-key');
 
+  // Or for a local server (e.g. LM Studio) without API key:
+  // final client = Client(baseUrl: 'http://localhost:1234');
+
   final request = CreateResponseBody(
     model: 'gpt-4o',
     input: Input.items([

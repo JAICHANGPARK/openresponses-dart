@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../types/requests.dart';
 import '../types/responses.dart';
 
-const String _defaultBaseUrl = 'https://api.openai.com/v1';
+const String _defaultBaseUrl = 'https://api.openai.com';
 
 /// Exception thrown by the client
 class OpenResponsesException implements Exception {
@@ -22,34 +22,33 @@ class OpenResponsesException implements Exception {
 
 /// HTTP client for the Open Responses API
 class Client {
-  final String _apiKey;
+  final String? _apiKey;
   final String _baseUrl;
   final http.Client _httpClient;
 
   /// Creates a new client with the given API key
-  Client({required String apiKey, String? baseUrl, http.Client? httpClient})
+  Client({String? apiKey, String? baseUrl, http.Client? httpClient})
     : _apiKey = apiKey,
-      _baseUrl = baseUrl ?? _defaultBaseUrl,
+      _baseUrl = (baseUrl ?? _defaultBaseUrl).replaceAll(RegExp(r'/$'), ''),
       _httpClient = httpClient ?? http.Client();
 
   /// Creates a new client with a custom base URL
-  factory Client.withBaseUrl({
-    required String apiKey,
-    required String baseUrl,
-  }) {
+  factory Client.withBaseUrl({required String baseUrl, String? apiKey}) {
     return Client(apiKey: apiKey, baseUrl: baseUrl);
   }
 
   /// Sends a request to create a response
   Future<ResponseResource> createResponse(CreateResponseBody request) async {
-    final url = Uri.parse('$_baseUrl/responses');
+    final url = Uri.parse('$_baseUrl/v1/responses');
+
+    final headers = {'Content-Type': 'application/json'};
+    if (_apiKey != null) {
+      headers['Authorization'] = 'Bearer $_apiKey';
+    }
 
     final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-      },
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
 
@@ -67,14 +66,16 @@ class Client {
 
   /// Sends a request and returns the raw JSON response
   Future<String> createResponseRaw(CreateResponseBody request) async {
-    final url = Uri.parse('$_baseUrl/responses');
+    final url = Uri.parse('$_baseUrl/v1/responses');
+
+    final headers = {'Content-Type': 'application/json'};
+    if (_apiKey != null) {
+      headers['Authorization'] = 'Bearer $_apiKey';
+    }
 
     final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_apiKey',
-      },
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
 

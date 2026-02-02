@@ -1,6 +1,6 @@
 # Open Responses Dart
 
-[![pub package](https://img.shields.io/pub/v/open_responses_dart.svg)](https://pub.dev/packages/open_responses_dart)
+[![pub package](https://img.shields.io/pub/v/open_responses_dart.svg)](https://pub.dev/packages/open_responses_dart) 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A Dart/Flutter client library for the Open Responses API specification.
@@ -23,7 +23,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  open_responses_dart: ^0.1.0
+  open_responses_dart: ^0.1.1
 ```
 
 Then run:
@@ -40,7 +40,18 @@ dart pub get
 import 'package:open_responses_dart/open_responses_dart.dart';
 
 void main() async {
+  // For OpenAI (default)
   final client = Client(apiKey: 'your-api-key');
+  
+  // For Local Server (e.g., LM Studio)
+  // No need to append /v1, the client handles it
+  final localClient = Client(baseUrl: 'http://localhost:1234'); 
+  
+  // For OpenRouter
+  final routerClient = Client(
+    apiKey: 'your-openrouter-key',
+    baseUrl: 'https://openrouter.ai/api',
+  );
 
   final request = CreateResponseBody(
     model: 'gpt-4o',
@@ -235,12 +246,12 @@ InputContent image = .imageUrl('https://example.com/image.png');
 
 ### Real-World Example
 
-Here's how dot shorthands make your API calls cleaner:
+Here\'s how dot shorthands make your API calls cleaner:
 
 ```dart
 final request = CreateResponseBody(
   model: 'gpt-4o',
-  input: .items([  // Input.items
+  input: .items([
     ItemFactory.systemMessage('You are helpful.'),
     ItemFactory.userMessage('Hello!'),
   ]),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:open_responses_dart/open_responses_dart.dart';
 import 'package:test/test.dart';
 
@@ -142,7 +143,7 @@ void main() {
 
   group('Responses', () {
     test('ResponseResource can be deserialized', () {
-      final json = {
+      final jsonMap = {
         'id': 'resp_123',
         'object': 'response',
         'created_at': 1234567890,
@@ -167,19 +168,25 @@ void main() {
         'metadata': {},
       };
 
+      // Simulate JSON decoding to ensure types are Map<String, dynamic>
+      final json = jsonDecode(jsonEncode(jsonMap)) as Map<String, dynamic>;
+
       final response = ResponseResource.fromJson(json);
       expect(response.id, 'resp_123');
       expect(response.status, 'completed');
     });
 
     test('Usage can be deserialized', () {
-      final json = {
+      final jsonMap = {
         'input_tokens': 10,
         'output_tokens': 20,
         'total_tokens': 30,
         'input_tokens_details': {'cached_tokens': 5},
         'output_tokens_details': {'reasoning_tokens': 0},
       };
+
+      // Simulate JSON decoding to ensure types are Map<String, dynamic>
+      final json = jsonDecode(jsonEncode(jsonMap)) as Map<String, dynamic>;
 
       final usage = Usage.fromJson(json);
       expect(usage.inputTokens, 10);
